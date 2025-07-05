@@ -1,0 +1,33 @@
+services:
+  redis-mytextwriter:
+    image: redis:latest
+    volumes:
+      - redis_data:/data
+    networks:
+      - internal_network
+    restart: always
+  
+  mytextwriter-com-server:
+    image: python:3.11-slim
+    depends_on:
+      - redis-mytextwriter
+    environment:
+      REDIS_URL: redis://redis-mytextwriter:6379
+    volumes:
+      - ./app:/app                    
+      - pip-cache:/root/.cache/pip
+    working_dir: /app
+    command: bash -c "pip install --cache-dir=/root/.cache/pip -r requirements.txt && python app.py"
+    ports:
+      - "127.0.0.1:5000:5000"
+    networks:
+      - internal_network
+    restart: always
+
+volumes:
+  redis_data:
+  pip-cache:
+
+networks:
+  internal_network:
+    driver: bridge
