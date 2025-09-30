@@ -1,2 +1,2 @@
 redis==5.2.0
-tornado==6.4.1
+tornado==6.5.2
